@@ -27,12 +27,10 @@ nnoremap <Leader>[ <C-t>
 nnoremap <Leader><BS> <C-o>
 
 " insert language boilerplate
-nnoremap <Leader>pdb  :read $HOME/.vim/snippets/pdb.py<ESC>
+nnoremap <Leader>pdb  :read $HOME/.vim/snippets/pdb.py<ESC>==
 " nnoremap <Leader>pymain :read $HOME/.vim/snippets/pyboil.py<CR>
 nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f 
 nnoremap <Leader>sh :read $HOME/.vim/snippets/shboil<CR>
-
-" TODO: these are never formatted right
 
 " Because I sometimes use fish
 set shell=bash
@@ -69,6 +67,9 @@ set undolevels=1000
 "line. useful for line lines taking up multiple rows
 :nmap j gj
 :nmap k gk
+
+:nnoremap <leader>l gt
+:nnoremap <leader>h gT
 
 "toggle relative and absolute number line
 nnoremap <F3> : set rnu!<CR>
@@ -117,12 +118,16 @@ set omnifunc=syntaxcomplete#Complete
 "and use a non-emacs style shortcut for it. 
 "inoremap <S-Tab> <C-x><C-o>
 
-inoremap <Tab-Tab> <C-n>
+" we want to map C-Space to C-n
+" inoremap <C- > <C-n>
+
+" this hightlights the number trough when the corresponding line is HLed
+hi! link CursorLineNr CursorLine
 
 set laststatus=2 "this turns the status line on by default
 
 " provide some sort of alternative to ESC
-:inoremap jj <ESC>
+inoremap jj <ESC>
 
 "==================== HERE BE PLUGINS ====================
 
@@ -146,7 +151,11 @@ Plugin 'VundleVim/Vundle.vim'
 " let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
 
 Plugin 'tpope/vim-fugitive'
+
+nnoremap <leader>gb :Gblame<CR>
+
 Plugin 'tpope/vim-obsession'
+
 
 Plugin 'vim-airline/vim-airline'
 let g:airline#extensions#ale#enabled = 1
@@ -165,7 +174,12 @@ hi link ALEErrorSign    Error
 hi link ALEWarningSign  Warning
 
 
+" Plugin 'shougo/deoplete.nvim'
+" Plugin 'roxma/nvim-yarp'
+" Plugin 'roxma/vim-hug-neovim-rpc'
+" let g:deoplete#enable_at_startup = 1
 
+Plugin 'ambv/black'
 Plugin 'mbbill/undotree'
 nmap <leader>u :UndotreeToggle<CR>
 
@@ -179,11 +193,13 @@ set updatetime=500 " This controls the tagbar 'refresh' but also the swap file r
 Plugin 'junegunn/fzf.vim' " find files, find tags
 nmap <leader>ff :Files<CR>
 nmap <leader>ft :Tags<CR>
+nmap <leader>fs :Ag
+nmap <leader>fc :Commits<CR>
 " https://github.com/junegunn/fzf.vim  " make these nice
 
 Plugin 'tpope/vim-surround'
 
-Plugin 'rubik/vim-radon'
+" Plugin 'rubik/vim-radon'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -274,10 +290,10 @@ function! AutoTrimWidth()
 endfunction
 
 
-nnoremap Q :call autoTrimLength()<CR>
-augroup bufsize
-    autocmd BufWinEnter *.py :call AutoTrimLength()
-augroup END
+" nnoremap Q :call autoTrimLength()<CR>
+" augroup bufsize
+"     autocmd BufWinEnter *.py :call AutoTrimLength()
+" augroup END
 
 "make Escape switch to Terminal-Normal mode:
 tnoremap <Esc> <C-W>N
