@@ -13,7 +13,6 @@ set path+=/Users/maxlebedev/dm-combined/**
 set path+=/Users/maxlebedev/etl/**
 set runtimepath+=/usr/local/opt/fzf
 
-" Making leader space. Kind of insane. Experimental
 let g:mapleader = ' '
 
 " use tags: ctrl+] to jump to tag, prepend g for ambig, ctrl+t to jump back
@@ -23,20 +22,20 @@ nnoremap <Leader>[ <C-t>
 
 " TODO: I installed gtags (GLOBAL) but it doesn't seem to work well at all
 
-" return from a tag
+" return from a move
 nnoremap <Leader><BS> <C-o>
 
 " insert language boilerplate
 nnoremap <Leader>pdb  :read $HOME/.vim/snippets/pdb.py<ESC>==
 " nnoremap <Leader>pymain :read $HOME/.vim/snippets/pyboil.py<CR>
-nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f 
+" nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f 
 nnoremap <Leader>sh :read $HOME/.vim/snippets/shboil<CR>
 
 " Because I sometimes use fish
 set shell=bash
 
 " we never want to just lose a bunch of splits
-noremap   <C-w><C-o>  :tab sp
+noremap   <C-w><C-o>  :tab sp<CR>
 
 "autocomplete for commands
 set wildmode=longest:full
@@ -63,34 +62,44 @@ set scrolloff=8
 set history=1000 
 set undolevels=1000  
 
+"  KINESIS MODE
+noremap ; l
+noremap l k
+noremap k j
+noremap j h
+" map <m-k> <c-w>j
+" map <m-l> <c-w>k
+" map <m-;> <c-w>l
+" map <m-j> <c-w>h
+noremap <c-w>j <c-w>h
+noremap <c-w>k <c-w>j
+noremap <c-w>l <c-w>k
+noremap <c-w>; <c-w>l
 "Cursor should move up/down a single row on the screen rather than to the next
 "line. useful for line lines taking up multiple rows
-:nmap j gj
-:nmap k gk
+" :nmap j gj
+" :nmap k gk
 
-:nnoremap <leader>l gt
-:nnoremap <leader>h gT
+:nnoremap <leader>j gT
+:nnoremap <leader>; gt
 
 "toggle relative and absolute number line
 nnoremap <F3> : set rnu!<CR>
 
-" w! sudo saves
-cmap w!! w !sudo tee % >/dev/null
+" W sudo saves
+cmap W! w !sudo tee % >/dev/null
 
-"make newlines with \[enter] without having to go to insert mode (myself).
+"make newlines with [enter] without having to go to insert mode (myself).
 nmap <leader><cr> i<cr><Esc>
 
 "spelling
 set spelllang=en
 
-"this is controversial but possibly awesome
-nnoremap ; :
-
 "alternate window movement
-map <c-j> <c-w>j
-map <c-k> <c-w>k
-map <c-l> <c-w>l
-map <c-h> <c-w>h
+" map <c-j> <c-w>j
+" map <c-k> <c-w>k
+" map <c-l> <c-w>l
+" map <c-h> <c-w>h
 
 " consider giving TabTab to something better
 " map <Tab><Tab> <C-W>w
@@ -140,6 +149,8 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+" Plugin 'andymass/vim-tradewinds' # does this require py3.6?
+
 " Plugin 'Valloric/YouCompleteMe'
 " let g:ycm_autoclose_preview_window_after_completion=1
 " let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
@@ -156,6 +167,7 @@ nnoremap <leader>gb :Gblame<CR>
 
 Plugin 'tpope/vim-obsession'
 
+Plugin 'RRethy/vim-illuminate'
 
 Plugin 'vim-airline/vim-airline'
 let g:airline#extensions#ale#enabled = 1
@@ -179,7 +191,6 @@ hi link ALEWarningSign  Warning
 " Plugin 'roxma/vim-hug-neovim-rpc'
 " let g:deoplete#enable_at_startup = 1
 
-Plugin 'ambv/black'
 Plugin 'mbbill/undotree'
 nmap <leader>u :UndotreeToggle<CR>
 
@@ -296,7 +307,7 @@ endfunction
 " augroup END
 
 "make Escape switch to Terminal-Normal mode:
-tnoremap <Esc> <C-W>N
+tnoremap <Esc> <C-w>N
 " term setup progress
 "   arrowkeys only kinda work
 "   paste kinda works
