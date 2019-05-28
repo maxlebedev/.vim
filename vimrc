@@ -6,6 +6,7 @@ syntax enable
 set background=dark
 set noerrorbells
 set ttyfast
+set autoread
 
 " for find and such
 set path+=**
@@ -75,6 +76,11 @@ noremap <c-w>j <c-w>h
 noremap <c-w>k <c-w>j
 noremap <c-w>l <c-w>k
 noremap <c-w>; <c-w>l
+"alternate window movement
+noremap <c-j> <c-w>h
+noremap <c-k> <c-w>j
+noremap <c-l> <c-w>k
+noremap <c-;> <c-w>l
 "Cursor should move up/down a single row on the screen rather than to the next
 "line. useful for line lines taking up multiple rows
 " :nmap j gj
@@ -87,19 +93,17 @@ noremap <c-w>; <c-w>l
 nnoremap <F3> : set rnu!<CR>
 
 " W sudo saves
-cmap W! w !sudo tee % >/dev/null
+cmap w! w !sudo tee % >/dev/null
 
 "make newlines with [enter] without having to go to insert mode (myself).
 nmap <leader><cr> i<cr><Esc>
 
+"fix this annoying :W typo
+cmap W w
+
 "spelling
 set spelllang=en
 
-"alternate window movement
-" map <c-j> <c-w>j
-" map <c-k> <c-w>k
-" map <c-l> <c-w>l
-" map <c-h> <c-w>h
 
 " consider giving TabTab to something better
 " map <Tab><Tab> <C-W>w
@@ -171,6 +175,8 @@ Plugin 'RRethy/vim-illuminate'
 
 Plugin 'vim-airline/vim-airline'
 let g:airline#extensions#ale#enabled = 1
+
+Plugin 'airblade/vim-gitgutter'
 
 Plugin 'vim-scripts/indentpython.vim'
 
@@ -322,3 +328,13 @@ augroup buffers
     autocmd BufDelete * let g:latest_deleted_buffer = expand("<afile>:p")
 augroup END
 nnoremap <F6> :sp <C-R>=fnameescape(g:latest_deleted_buffer)<CR><CR>
+
+
+" replace the current word with the last yanked text
+:nnoremap <leader>rr viw"0p
+
+" dumb hack to go back to what I was doing
+:nnoremap <leader>gg uU
+
+" automatically reload on moving to a buffer
+au FocusGained,WinEnter % :checktime
