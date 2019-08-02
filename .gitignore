@@ -1,0 +1,6 @@
+
+.DS_Store
+.netrwhist
+*.swp
+bundle/*
+session_*.vim
