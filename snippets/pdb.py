@@ -1,1 +1,1 @@
-from nose.tools import set_trace; set_trace()
+from pdb import set_trace; set_trace()

@@ -81,6 +81,13 @@ noremap <c-j> <c-w>h
 noremap <c-k> <c-w>j
 noremap <c-l> <c-w>k
 noremap <c-;> <c-w>l
+
+" since we are not using arrow keys, they can be window movement
+noremap <Left> <c-w>h
+noremap <Down> <c-w>j
+noremap <Up>  <c-w>k
+noremap <Right> <c-w>l
+
 "Cursor should move up/down a single row on the screen rather than to the next
 "line. useful for line lines taking up multiple rows
 " :nmap j gj
@@ -98,11 +105,13 @@ cmap w! w !sudo tee % >/dev/null
 "make newlines with [enter] without having to go to insert mode (myself).
 nmap <leader><cr> i<cr><Esc>
 
-"fix this annoying :W typo
-cmap W w
-
 "spelling
 set spelllang=en
+
+set spell spelllang=en_us
+" instead of red blocks, underline misspelled words
+hi clear SpellBad
+hi SpellBad cterm=underline
 
 
 " consider giving TabTab to something better
@@ -209,12 +218,17 @@ set updatetime=500 " This controls the tagbar 'refresh' but also the swap file r
 
 Plugin 'junegunn/fzf.vim' " find files, find tags
 nmap <leader>ff :Files<CR>
+" Ctrl + X: is :sp, Ctrl + T is :tabe
 nmap <leader>ft :Tags<CR>
 nmap <leader>fs :Ag
 nmap <leader>fc :Commits<CR>
 " https://github.com/junegunn/fzf.vim  " make these nice
 
 Plugin 'tpope/vim-surround'
+
+Plugin 'mattn/emmet-vim'
+let g:user_emmet_leader_key=','
+" example div>p#foo$*5>a ,, makes those tags
 
 " Plugin 'rubik/vim-radon'
 
@@ -235,13 +249,6 @@ filetype plugin indent on    " required
 
 filetype indent plugin on " read all filetype specific plugins. none by default automatic indentation
 
-" virtual tabstops using spaces ermergerd this better work
-set shiftwidth=4
-set softtabstop=4
-set expandtab ts=4 sw=4 ai
-" As suggested by PEP8.
-setlocal expandtab shiftwidth=4 softtabstop=4 tabstop=8
-" allow toggling between local and default mode
 set smartindent
 
 " not convinced that this works
@@ -250,26 +257,26 @@ let g:airline#extensions#default#section_truncate_width = {
             \ 'c': 10,
             \ 'y': 150,
             \ }
-
-" indicate this is the window to swap to
-function! MarkWindowSwap()
-    let g:markedWinNum = winnr()
-    echo 'window marked'
-endfunction
-
+" first time mark, then swap repeat
 function! DoWindowSwap()
-    "Mark destination
-    let l:curNum = winnr()
-    let l:curBuf = bufnr( '%' )
-    exe g:markedWinNum . 'wincmd w'
-    "Switch to source and shuffle dest->source
-    let l:markedBuf = bufnr( '%' )
-    "Hide and open so that we aren't prompted and keep history
-    exe 'hide buf' l:curBuf
-    "Switch to dest and shuffle source->dest
-    exe l:curNum . 'wincmd w'
-    "Hide and open so that we aren't prompted and keep history
-    exe 'hide buf' l:markedBuf 
+    if exists('g:markedWinNum')
+        "Mark destination
+        let l:curNum = winnr()
+        let l:curBuf = bufnr( '%' )
+        exe g:markedWinNum . 'wincmd w'
+        "Switch to source and shuffle dest->source
+        let l:markedBuf = bufnr( '%' )
+        "Hide and open so that we aren't prompted and keep history
+        exe 'hide buf' l:curBuf
+        "Switch to dest and shuffle source->dest
+        exe l:curNum . 'wincmd w'
+        "Hide and open so that we aren't prompted and keep history
+        exe 'hide buf' l:markedBuf
+        unlet g:markedWinNum
+    else
+        let g:markedWinNum = winnr()
+        echo 'window marked'
+    endif
 endfunction
 
 nmap <silent> <leader>q :call MarkWindowSwap()<CR>
@@ -331,10 +338,12 @@ nnoremap <F6> :sp <C-R>=fnameescape(g:latest_deleted_buffer)<CR><CR>
 
 
 " replace the current word with the last yanked text
-:nnoremap <leader>rr viw"0p
+nnoremap <leader>rr viw"0p
 
 " dumb hack to go back to what I was doing
-:nnoremap <leader>gg uU
+nnoremap <leader>gg uU
 
-" automatically reload on moving to a buffer
-au FocusGained,WinEnter % :checktime
+" Triger `autoread` when files changes on disk
+autocmd FocusGained,BufEnter * if mode() != 'c' | checktime | endif
+" Notification after file change
+
