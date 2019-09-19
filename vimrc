@@ -184,6 +184,7 @@ Plugin 'RRethy/vim-illuminate'
 
 Plugin 'vim-airline/vim-airline'
 let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#branch#format = 1
 
 Plugin 'airblade/vim-gitgutter'
 
@@ -253,7 +254,6 @@ set smartindent
 
 " not convinced that this works
 let g:airline#extensions#default#section_truncate_width = {
-            \ 'b': 150,
             \ 'c': 10,
             \ 'y': 150,
             \ }
