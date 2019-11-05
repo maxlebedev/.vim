@@ -16,9 +16,11 @@ set runtimepath+=/usr/local/opt/fzf
 
 let g:mapleader = ' '
 
+set noswapfile
+
 " use tags: ctrl+] to jump to tag, prepend g for ambig, ctrl+t to jump back
 command! MakeTags !ctags -R .
-nnoremap <Leader>] g<C-]> 
+nnoremap <Leader>] g<C-]>
 nnoremap <Leader>[ <C-t>
 
 " TODO: I installed gtags (GLOBAL) but it doesn't seem to work well at all
@@ -29,7 +31,7 @@ nnoremap <Leader><BS> <C-o>
 " insert language boilerplate
 nnoremap <Leader>pdb  :read $HOME/.vim/snippets/pdb.py<ESC>==
 " nnoremap <Leader>pymain :read $HOME/.vim/snippets/pyboil.py<CR>
-" nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f 
+" nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f
 nnoremap <Leader>sh :read $HOME/.vim/snippets/shboil<CR>
 
 " Because I sometimes use fish
@@ -56,12 +58,11 @@ set hidden
 set wrapscan
 
 
-set statusline=%f\ %m\ %r\ Line:\ %l/%L[%p%%]\ Col:\ %c\ Buf:\ #%n\ [%b][0x%B]  " airline probably overwrites
 set mousehide
 set scrolloff=8
 
-set history=1000 
-set undolevels=1000  
+set history=1000
+set undolevels=1000
 
 "  KINESIS MODE
 noremap ; l
@@ -117,7 +118,7 @@ hi SpellBad cterm=underline
 " consider giving TabTab to something better
 " map <Tab><Tab> <C-W>w
 
-" set crosshairs 
+" set crosshairs
 hi CursorLine cterm=NONE ctermbg=DarkGray ctermfg=NONE
 hi CursorColumn cterm=NONE ctermbg=DarkGray ctermfg=NONE
 nnoremap <Leader>c :set cursorline! cursorcolumn!<CR>
@@ -127,7 +128,7 @@ nnoremap U :redo<CR>
 
 "this function replaces s with a single insert
 function! RepeatChar(char, count)
-	return repeat(a:char, a:count)
+    return repeat(a:char, a:count)
 endfunction
 nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
 nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
@@ -135,10 +136,6 @@ nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 " prevent the command line history buffer from happening
 " map q: :q
 
-"this turns on autocompletion
-set omnifunc=syntaxcomplete#Complete
-"and use a non-emacs style shortcut for it. 
-"inoremap <S-Tab> <C-x><C-o>
 
 " we want to map C-Space to C-n
 " inoremap <C- > <C-n>
@@ -183,8 +180,14 @@ Plugin 'tpope/vim-obsession'
 Plugin 'RRethy/vim-illuminate'
 
 Plugin 'vim-airline/vim-airline'
+let airline#extensions#ale#error_symbol = '✘'
+let airline#extensions#ale#warning_symbol = '⚠'
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#branch#format = 1
+" not convinced that this works
+let g:airline#extensions#default#layout = [ [ 'a', 'c' ], [ 'error', 'warning', 'b' ] ]
+" refresh after setup
+autocmd VimEnter * :AirlineRefresh
 
 Plugin 'airblade/vim-gitgutter'
 
@@ -193,13 +196,21 @@ Plugin 'vim-scripts/indentpython.vim'
 Plugin 'w0rp/ale.git'
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
-let g:ale_python_flake8_args = '--ignore=E501'
 let g:ale_python_flake8_options = '--ignore=E501'
 let g:ale_set_signs = 1
 let g:ale_set_highlights = 1
-highlight clear SignColumn 
+let g:ale_completion_enabled=1
+" this gets us SOME python aurocompletion, but its not very good
+let g:ale_linters_explicit = 1
+let b:ale_linters = {'python': ['pyls', 'flake8', 'yapf', 'mypy']}
+
+highlight clear SignColumn
 hi link ALEErrorSign    Error
 hi link ALEWarningSign  Warning
+
+set omnifunc=ale#completion#OmniFunc
+"and use a non-emacs style shortcut for it.
+inoremap <Tab><Tab> <C-x><C-o>
 
 
 " Plugin 'shougo/deoplete.nvim'
@@ -225,10 +236,13 @@ nmap <leader>fs :Ag
 nmap <leader>fc :Commits<CR>
 " https://github.com/junegunn/fzf.vim  " make these nice
 
+Plugin 'easymotion/vim-easymotion'
+map <Leader> <Plug>(easymotion-prefix)
+
 Plugin 'tpope/vim-surround'
 
-Plugin 'mattn/emmet-vim'
-let g:user_emmet_leader_key=','
+" Plugin 'mattn/emmet-vim'
+" let g:user_emmet_leader_key=','
 " example div>p#foo$*5>a ,, makes those tags
 
 " Plugin 'rubik/vim-radon'
@@ -252,11 +266,6 @@ filetype indent plugin on " read all filetype specific plugins. None by default 
 
 set smartindent
 
-" not convinced that this works
-let g:airline#extensions#default#section_truncate_width = {
-            \ 'c': 10,
-            \ 'y': 150,
-            \ }
 " first time mark, then swap repeat
 function! DoWindowSwap()
     if exists('g:markedWinNum')
@@ -279,13 +288,14 @@ function! DoWindowSwap()
     endif
 endfunction
 
-nmap <silent> <leader>q :call MarkWindowSwap()<CR>
 nmap <silent> <leader>w :call DoWindowSwap()<CR>
 
 "search for selected text
-vnoremap // y/<C-R>"<CR> 
+vnoremap // y/<C-R>"<CR>
 
 set clipboard=unnamed
+
+" open string as file
 nmap <Leader>o <C-w><C-f>
 
 set synmaxcol=361
@@ -325,9 +335,9 @@ tnoremap <Esc> <C-w>N
 "   arrowkeys only kinda work
 "   paste kinda works
 
-tnoremap  <C-k> <Up> 
-tnoremap  <C-j> <Down> 
-tnoremap  <C-h> <C-b> 
+tnoremap  <C-k> <Up>
+tnoremap  <C-j> <Down>
+tnoremap  <C-h> <C-b>
 tnoremap  <C-l> <Right>
 
 " F6 undoes a buffer close
@@ -346,4 +356,3 @@ nnoremap <leader>gg uU
 " Triger `autoread` when files changes on disk
 autocmd FocusGained,BufEnter * if mode() != 'c' | checktime | endif
 " Notification after file change
-
