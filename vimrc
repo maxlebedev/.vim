@@ -194,8 +194,8 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'vim-scripts/indentpython.vim'
 
 Plugin 'w0rp/ale.git'
-let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_error = '◉ '
+let g:ale_sign_warning = '◉'
 let g:ale_python_flake8_options = '--ignore=E501'
 let g:ale_set_signs = 1
 let g:ale_set_highlights = 1
@@ -205,7 +205,7 @@ let g:ale_linters_explicit = 1
 let b:ale_linters = {'python': ['pyls', 'flake8', 'yapf', 'mypy']}
 
 highlight clear SignColumn
-hi link ALEErrorSign    Error
+hi ALEErrorSign ctermfg=9 ctermbg=None
 hi link ALEWarningSign  Warning
 
 set omnifunc=ale#completion#OmniFunc
