@@ -202,7 +202,19 @@ let g:ale_set_highlights = 1
 let g:ale_completion_enabled=1
 " this gets us SOME python aurocompletion, but its not very good
 let g:ale_linters_explicit = 1
-let b:ale_linters = {'python': ['pyls', 'flake8', 'yapf', 'mypy']}
+let b:ale_linters = {
+\    'python': ['pyls', 'flake8', 'yapf', 'mypy'],
+\    'javascript': ['eslint'],
+\    'typescript': ['tsserver', 'tslint']
+\}
+
+let g:ale_fixers = {
+\    'javascript': ['eslint'],
+\    'typescript': ['prettier'],
+\    'scss': ['prettier'],
+\    'html': ['prettier']
+\}
+let g:ale_fix_on_save = 1
 
 highlight clear SignColumn
 hi ALEErrorSign ctermfg=9 ctermbg=None
@@ -210,7 +222,7 @@ hi link ALEWarningSign  Warning
 
 set omnifunc=ale#completion#OmniFunc
 "and use a non-emacs style shortcut for it.
-inoremap <Tab><Tab> <C-x><C-o>
+inoremap <leader><Tab> <C-x><C-o>
 
 
 " Plugin 'shougo/deoplete.nvim'
@@ -240,6 +252,8 @@ Plugin 'easymotion/vim-easymotion'
 map <Leader> <Plug>(easymotion-prefix)
 
 Plugin 'tpope/vim-surround'
+
+Plugin 'leafgarland/typescript-vim'
 
 " Plugin 'mattn/emmet-vim'
 " let g:user_emmet_leader_key=','
@@ -323,10 +337,11 @@ function! AutoTrimWidth()
     execute 'vertical resize' l:linelen
 endfunction
 
+au BufRead,BufNewFile *.ts setlocal  filetype=typescript
 
 " nnoremap Q :call autoTrimLength()<CR>
 " augroup bufsize
-"     autocmd BufWinEnter *.py :call AutoTrimLength()
+"     autocmd BufWinEnter * :call AutoTrimLength()
 " augroup END
 
 "make Escape switch to Terminal-Normal mode:
@@ -354,5 +369,8 @@ nnoremap <leader>rr viw"0p
 nnoremap <leader>gg uU
 
 " Triger `autoread` when files changes on disk
-autocmd FocusGained,BufEnter * if mode() != 'c' | checktime | endif
+" autocmd FocusGained,BufEnter * if mode() != 'c' | checktime | endif
 " Notification after file change
+
+" set key-chord time out to half of the default
+set timeoutlen=500
