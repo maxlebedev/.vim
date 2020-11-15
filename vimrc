@@ -1,3 +1,4 @@
+set nocompatible
 set encoding=utf-8
 scriptencoding utf-8
 set number
@@ -10,20 +11,23 @@ set autoread
 
 " for find and such
 set path+=**
-set path+=/Users/maxlebedev/dm-combined/**
-set path+=/Users/maxlebedev/etl/**
-set runtimepath+=/usr/local/opt/fzf
 
 let g:mapleader = ' '
 
 set noswapfile
 
-" use tags: ctrl+] to jump to tag, prepend g for ambig, ctrl+t to jump back
+" use tags: ] to go to the definition of the curren token, [ to go back
 command! MakeTags !ctags -R .
-nnoremap <Leader>] g<C-]>
+nnoremap <Leader>] <C-]>
+nnoremap <Leader>g] g<C-]>
 nnoremap <Leader>[ <C-t>
 
-" TODO: I installed gtags (GLOBAL) but it doesn't seem to work well at all
+" TODO: Does [ and BS do anything meaningfully different?
+
+" lookup funciton definition by tag
+nnoremap gp <C-w>}
+nnoremap gz <C-w>z # close preview window
+
 
 " return from a move
 nnoremap <Leader><BS> <C-o>
@@ -37,7 +41,8 @@ nnoremap <Leader>sh :read $HOME/.vim/snippets/shboil<CR>
 " Because I sometimes use fish
 set shell=bash
 
-" we never want to just lose a bunch of splits
+" by defualt, this woild hide all other splits.
+" Insteas we open the buffer in a new tab
 noremap   <C-w><C-o>  :tab sp<CR>
 
 "autocomplete for commands
@@ -66,8 +71,8 @@ set undolevels=1000
 
 "  KINESIS MODE
 noremap ; l
-noremap l k
-noremap k j
+noremap l gk
+noremap k gj
 noremap j h
 " map <m-k> <c-w>j
 " map <m-l> <c-w>k
@@ -112,7 +117,8 @@ set spelllang=en
 set spell spelllang=en_us
 " instead of red blocks, underline misspelled words
 hi clear SpellBad
-hi SpellBad cterm=underline
+" hi SpellBad cterm=underline
+set nospell
 
 
 " consider giving TabTab to something better
@@ -148,122 +154,133 @@ set laststatus=2 "this turns the status line on by default
 " provide some sort of alternative to ESC
 inoremap jj <ESC>
 
-"==================== HERE BE PLUGINS ====================
 
-" set the runtime path to include Vundle and initialize
-set runtimepath+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" ------------------------ Plugins
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+" if plug.vim is not installed, install it
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-" Plugin 'andymass/vim-tradewinds' # does this require py3.6?
+call plug#begin('~/.vim/plugged')
 
-" Plugin 'Valloric/YouCompleteMe'
-" let g:ycm_autoclose_preview_window_after_completion=1
-" let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
-" let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
-" let g:ycm_complete_in_comments = 1 " Completion in comments
-" let g:ycm_complete_in_strings = 1 " Completion in string
-
-" let g:ycm_key_list_select_completion = ['<C-j>', '<Down>'] " C-j/k to navigate
-" let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
-
-Plugin 'tpope/vim-fugitive'
-
+" git plugin, enables git blame
+Plug 'tpope/vim-fugitive'
 nnoremap <leader>gb :Gblame<CR>
 
-Plugin 'tpope/vim-obsession'
+" highlight other uses of the word under cursor
+Plug 'RRethy/vim-illuminate'
 
-Plugin 'RRethy/vim-illuminate'
+" git diff in the vim gutter
+Plug 'airblade/vim-gitgutter'
 
-Plugin 'vim-airline/vim-airline'
-let airline#extensions#ale#error_symbol = '✘'
-let airline#extensions#ale#warning_symbol = '⚠'
-let g:airline#extensions#ale#enabled = 1
-let g:airline#extensions#branch#format = 1
-" not convinced that this works
-let g:airline#extensions#default#layout = [ [ 'a', 'c' ], [ 'error', 'warning', 'b' ] ]
-" refresh after setup
-autocmd VimEnter * :AirlineRefresh
-
-Plugin 'airblade/vim-gitgutter'
-
-Plugin 'vim-scripts/indentpython.vim'
-
-Plugin 'w0rp/ale.git'
-let g:ale_sign_error = '◉ '
-let g:ale_sign_warning = '◉'
-let g:ale_python_flake8_options = '--ignore=E501'
-let g:ale_set_signs = 1
-let g:ale_set_highlights = 1
-let g:ale_completion_enabled=1
-" this gets us SOME python aurocompletion, but its not very good
-let g:ale_linters_explicit = 1
-let b:ale_linters = {
-\    'python': ['pyls', 'flake8', 'yapf', 'mypy'],
-\    'javascript': ['eslint'],
-\    'typescript': ['tsserver', 'tslint']
-\}
-
-let g:ale_fixers = {
-\    'javascript': ['eslint'],
-\    'typescript': ['prettier'],
-\    'scss': ['prettier'],
-\    'html': ['prettier']
-\}
-let g:ale_fix_on_save = 1
-
-highlight clear SignColumn
-hi ALEErrorSign ctermfg=9 ctermbg=None
-hi link ALEWarningSign  Warning
-
-set omnifunc=ale#completion#OmniFunc
-"and use a non-emacs style shortcut for it.
-inoremap <leader><Tab> <C-x><C-o>
-
-
-" Plugin 'shougo/deoplete.nvim'
-" Plugin 'roxma/nvim-yarp'
-" Plugin 'roxma/vim-hug-neovim-rpc'
-" let g:deoplete#enable_at_startup = 1
-
-Plugin 'mbbill/undotree'
+" tree visualiser for vim undo
+Plug 'mbbill/undotree'
 nmap <leader>u :UndotreeToggle<CR>
 
-Plugin 'majutsushi/tagbar'
+" tag-based code overview panel
+Plug 'majutsushi/tagbar'
 nmap <leader>t :TagbarToggle<CR>
-set updatetime=500 " This controls the tagbar 'refresh' but also the swap file refresh frequency in ms.
+" This controls the tagbar 'refresh' but also the swap file refresh frequency in ms.
 " default is 4000, and low values cause problems.
+set updatetime=500
 
-" Plugin 'james9909/stackanswers.vim'
+"   Plug 'francoiscabrol/ranger.vim'
 
-Plugin 'junegunn/fzf.vim' " find files, find tags
-nmap <leader>ff :Files<CR>
-" Ctrl + X: is :sp, Ctrl + T is :tabe
-nmap <leader>ft :Tags<CR>
-nmap <leader>fs :Ag
-nmap <leader>fc :Commits<CR>
-" https://github.com/junegunn/fzf.vim  " make these nice
+" session management/restore
+call plug#end()
 
-Plugin 'easymotion/vim-easymotion'
-map <Leader> <Plug>(easymotion-prefix)
 
-Plugin 'tpope/vim-surround'
-
-Plugin 'leafgarland/typescript-vim'
-
-" Plugin 'mattn/emmet-vim'
-" let g:user_emmet_leader_key=','
-" example div>p#foo$*5>a ,, makes those tags
-
-" Plugin 'rubik/vim-radon'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+"" Plugin 'Valloric/YouCompleteMe'
+"" let g:ycm_autoclose_preview_window_after_completion=1
+"" let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
+"" let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
+"" let g:ycm_complete_in_comments = 1 " Completion in comments
+"" let g:ycm_complete_in_strings = 1 " Completion in string
+"
+"" let g:ycm_key_list_select_completion = ['<C-j>', '<Down>'] " C-j/k to navigate
+"" let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
+"
+"Plugin 'tpope/vim-obsession'
+"Plugin 'tpope/vim-surround'
+"
+"Plugin 'vim-airline/vim-airline'
+"let airline#extensions#ale#error_symbol = '✘'
+"let airline#extensions#ale#warning_symbol = '⚠'
+"let g:airline#extensions#ale#enabled = 1
+"let g:airline#extensions#branch#format = 1
+"" not convinced that this works
+"let g:airline#extensions#default#layout = [ [ 'a', 'c' ], [ 'error', 'warning', 'b' ] ]
+"" refresh after setup
+"autocmd VimEnter * :AirlineRefresh
+"
+"
+"Plugin 'vim-scripts/indentpython.vim'
+"
+"Plugin 'w0rp/ale.git'
+"let g:ale_sign_error = '◉ '
+"let g:ale_sign_warning = '◉'
+"let g:ale_python_flake8_options = '--ignore=E501'
+"let g:ale_set_signs = 1
+"let g:ale_set_highlights = 1
+"let g:ale_completion_enabled=1
+"" this gets us SOME python aurocompletion, but its not very good
+"let g:ale_linters_explicit = 1
+"let b:ale_linters = {
+"\    'python': ['pyls', 'flake8', 'yapf', 'mypy'],
+"\    'javascript': ['eslint'],
+"\    'typescript': ['tsserver', 'tslint']
+"\}
+"
+"let g:ale_fixers = {
+"\    'javascript': ['eslint'],
+"\    'typescript': ['prettier'],
+"\    'scss': ['prettier'],
+"\    'html': ['prettier']
+"\}
+"let g:ale_fix_on_save = 1
+"
+"highlight clear SignColumn
+"hi ALEErrorSign ctermfg=9 ctermbg=None
+"hi link ALEWarningSign  Warning
+"
+"set omnifunc=ale#completion#OmniFunc
+""and use a non-emacs style shortcut for it.
+"inoremap <leader><Tab> <C-x><C-o>
+"
+"
+"" Plugin 'shougo/deoplete.nvim'
+"" Plugin 'roxma/nvim-yarp'
+"" Plugin 'roxma/vim-hug-neovim-rpc'
+"" let g:deoplete#enable_at_startup = 1
+"
+"" Plugin 'james9909/stackanswers.vim'
+"
+"Plugin 'junegunn/fzf.vim' " find files, find tags
+"nmap <leader>ff :Files<CR>
+"" Ctrl + X: is :sp, Ctrl + T is :tabe
+"nmap <leader>ft :Tags<CR>
+"nmap <leader>fs :Ag
+"nmap <leader>fc :Commits<CR>
+"" https://github.com/junegunn/fzf.vim  " make these nice
+"
+"Plugin 'easymotion/vim-easymotion'
+"map <Leader> <Plug>(easymotion-prefix)
+"
+"
+"Plugin 'leafgarland/typescript-vim'
+"
+"" Plugin 'mattn/emmet-vim'
+"" let g:user_emmet_leader_key=','
+"" example div>p#foo$*5>a ,, makes those tags
+"
+"" Plugin 'rubik/vim-radon'
+"
+"" All of your Plugins must be added before the following line
+"call vundle#end()            " required
+"filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
@@ -355,11 +372,11 @@ tnoremap  <C-j> <Down>
 tnoremap  <C-h> <C-b>
 tnoremap  <C-l> <Right>
 
-" F6 undoes a buffer close
+" bu undoes a buffer close
 augroup buffers
     autocmd BufDelete * let g:latest_deleted_buffer = expand("<afile>:p")
 augroup END
-nnoremap <F6> :sp <C-R>=fnameescape(g:latest_deleted_buffer)<CR><CR>
+nnoremap bu :sp <C-R>=fnameescape(g:latest_deleted_buffer)<CR><CR>
 
 
 " replace the current word with the last yanked text
