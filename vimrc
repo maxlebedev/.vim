@@ -96,7 +96,32 @@ nmap <leader>t :TagbarToggle<CR>
 " default is 4000, and low values cause problems.
 set updatetime=500
 
+
 "   Plug 'francoiscabrol/ranger.vim'
+Plug 'dense-analysis/ale'
+
+let g:ale_disable_lsp = 1 " letting coc do the lsp work
+let g:ale_sign_error = '◉ '
+let g:ale_sign_warning = '◉'
+"let g:ale_python_flake8_options = '--ignore=E501'
+let g:ale_set_signs = 1
+let g:ale_set_highlights = 1
+
+highlight clear SignColumn
+highlight ALEErrorSign ctermfg=9 ctermbg=None
+hi link ALEWarningSign  Warning
+
+"   NEOVIM PLUGINS
+if has('nvim')
+    Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+    hi semshiUnresolved ctermfg=196 guifg=#ff0000 " make unresolved tokens red
+
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    
+" This is in theory better because it uses LSP, but I didnt' like it
+    "Plug 'liuchengxu/vista.vim'
+    "nmap <leader>t :Vista!!<CR>
+endif
 
 " session management/restore
 call plug#end()
@@ -106,6 +131,8 @@ filetype indent plugin on " read all filetype specific plugins. None by default 
 " ==================
 " 3: CUSTOM SETTINGS
 " ==================
+
+highlight Pmenu ctermbg=white guibg=white
 
 " TODO: does this fail if no ctags?
 " use tags: ] to go to the definition of the curren token, [ to go back
@@ -261,7 +288,7 @@ nmap <Leader>o <C-w><C-f>
 "Silver searcher
 let g:ackprg = 'ag --vimgrep'
 
-" tell it to use an undo file
+" opt into an undo file
 set undofile
 " set a directory to store the undo history
 set undodir=/Users/maxlebedev/.vimundo/
@@ -276,35 +303,12 @@ function! AutoTrimLength()
     endif
 endfunction
 
-function! AutoTrimWidth()
-    let l:linelen = max(map(getline(1,'$'), 'strchars(v:val)')) + 5 " magic number yay
-    execute 'vertical resize' l:linelen
-endfunction
-
 au BufRead,BufNewFile *.ts setlocal  filetype=typescript
 
 " nnoremap Q :call autoTrimLength()<CR>
 " augroup bufsize
 "     autocmd BufWinEnter * :call AutoTrimLength()
 " augroup END
-
-"make Escape switch to Terminal-Normal mode:
-tnoremap <Esc> <C-w>N
-" term setup progress
-"   arrowkeys only kinda work
-"   paste kinda works
-
-tnoremap  <C-k> <Up>
-tnoremap  <C-j> <Down>
-tnoremap  <C-h> <C-b>
-tnoremap  <C-l> <Right>
-
-" bu undoes a buffer close
-augroup buffers
-    autocmd BufDelete * let g:latest_deleted_buffer = expand("<afile>:p")
-augroup END
-nnoremap bu :sp <C-R>=fnameescape(g:latest_deleted_buffer)<CR><CR>
-
 
 " replace the current word with the last yanked text
 nnoremap <leader>rr viw"0p
@@ -320,3 +324,22 @@ nnoremap <leader>gg uU
 " :new | set buftype=nofile | read !ag 
 
 autocmd BufWritePost *.py !black %
+
+
+nnoremap gd <C-w>} " :pc to close preview window
+
+" this (hopefully lets us leave term
+if has('nvim')
+    tnoremap <ESC> <C-\><C-n>
+else
+    "make Escape switch to Terminal-Normal mode:
+    tnoremap <Esc> <C-w>N
+    " term setup progress
+    "   arrowkeys only kinda work
+    "   paste kinda works
+
+    tnoremap  <C-k> <Up>
+    tnoremap  <C-j> <Down>
+    tnoremap  <C-h> <C-b>
+    tnoremap  <C-l> <Right>
+endif
