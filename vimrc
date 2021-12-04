@@ -1,8 +1,3 @@
-" TODO: section off 
-" 1: necesary/universal configs
-" 2: Plugins
-" 3: my custom settings
-
 " ====================
 " 1: UNIVERSAL CONFIGS
 " ====================
@@ -13,10 +8,13 @@ scriptencoding utf-8
 set number
 set ruler
 syntax enable
-set background=dark
+" set background=dark
 set noerrorbells
 set ttyfast
 set autoread
+
+" use the colorscheme background color, not the terminal one
+set t_ut=""
 
 " for find and such
 set path+=**
@@ -26,7 +24,7 @@ let g:mapleader = ' '
 set noswapfile
 
 " Because I sometimes use fish
-set shell=bash
+set shell=/bin/bash
 
 "search settings
 set ignorecase
@@ -41,6 +39,11 @@ set backspace=2 " Allow backspace as delete in insert mode
 set hidden
 set wrapscan
 
+" opt into an undo file
+set undofile
+" set a directory to store the undo history
+" set undodir=/Users/maxlebedev/.vimundo/
+set undodir=/Users/maxlebedev/.nvimundo/
 
 set mousehide
 set scrolloff=8
@@ -55,6 +58,16 @@ set smartindent
 " set key-chord time out to half of the default
 set timeoutlen=500
 
+set clipboard=unnamed
+
+" this hightlights the number trough when the corresponding line is Held
+hi! link CursorLineNr CursorLine
+
+"autocomplete for commands
+set wildmode=longest:full
+set wildmenu
+
+let g:python3_host_prog = '/Users/maxlebedev/.virtualenvs/screen/bin/python'
 
 " ==========
 " 2: PLUGINS
@@ -69,12 +82,19 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'nvim-treesitter/nvim-treesitter'
+
 " git plugin, enables git blame
 Plug 'tpope/vim-fugitive'
-nnoremap <leader>gb :Gblame<CR>
+nnoremap <leader>gb :Git blame<CR>
 
 " highlight other uses of the word under cursor
 Plug 'RRethy/vim-illuminate'
+
+" color schemes
+Plug 'joshdick/onedark.vim'
+Plug 'sainnhe/sonokai'
+Plug 'sainnhe/edge'
 
 " git diff in the vim gutter
 Plug 'airblade/vim-gitgutter'
@@ -96,34 +116,31 @@ nmap <leader>t :TagbarToggle<CR>
 " default is 4000, and low values cause problems.
 set updatetime=500
 
+" Intellisense engine
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
+nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
 
-"   Plug 'francoiscabrol/ranger.vim'
-Plug 'dense-analysis/ale'
 
-let g:ale_disable_lsp = 1 " letting coc do the lsp work
-let g:ale_sign_error = '◉ '
-let g:ale_sign_warning = '◉'
-"let g:ale_python_flake8_options = '--ignore=E501'
-let g:ale_set_signs = 1
-let g:ale_set_highlights = 1
+" Display marks sidebar because I'm a visual person
+Plug 'Yilin-Yang/vim-markbar' " open on `
 
-highlight clear SignColumn
-highlight ALEErrorSign ctermfg=9 ctermbg=None
-hi link ALEWarningSign  Warning
+" experimentally turning this off to see if coc-pyright is doing this for me
+" Plug 'a-vrma/black-nvim', {'do': ':UpdateRemotePlugins'}
 
-"   NEOVIM PLUGINS
-if has('nvim')
-    Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
-    hi semshiUnresolved ctermfg=196 guifg=#ff0000 " make unresolved tokens red
+Plug 'sheerun/vim-polyglot'
 
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    
+
 " This is in theory better because it uses LSP, but I didnt' like it
-    "Plug 'liuchengxu/vista.vim'
-    "nmap <leader>t :Vista!!<CR>
-endif
+"Plug 'liuchengxu/vista.vim'
+"nmap <leader>t :Vista!!<CR>
 
-" session management/restore
+
+
+Plug 'metakirby5/codi.vim'
+
+
 call plug#end()
 
 filetype indent plugin on " read all filetype specific plugins. None by default automatic indentation
@@ -132,22 +149,32 @@ filetype indent plugin on " read all filetype specific plugins. None by default 
 " 3: CUSTOM SETTINGS
 " ==================
 
+" KINESIS MODE
+noremap j h
+noremap k gj
+noremap l gk
+noremap ; l
+
+" arrow keys as window movement
+noremap <Left> <c-w>h
+noremap <Down> <c-w>j
+noremap <Up>  <c-w>k
+noremap <Right> <c-w>l
+
+" Shift arrow to C-W hjkl
+noremap <S-Left> <c-w>H
+noremap <S-Down> <c-w>J
+noremap <S-Up>  <c-w>K
+noremap <S-Right> <c-w>L
+" END KINESIS MODE
+
 highlight Pmenu ctermbg=white guibg=white
 
-" TODO: does this fail if no ctags?
-" use tags: ] to go to the definition of the curren token, [ to go back
-command! MakeTags !ctags -R .
-nnoremap <Leader>] <C-]>
-nnoremap <Leader>g] g<C-]>
-nnoremap <Leader>[ <C-t>
+" lookup function definition by tag
+nnoremap gz <C-w>z " close preview window
+nnoremap gp <C-w>} " :pc to close preview window
 
-" TODO: Does [ and BS do anything meaningfully different?
-
-" lookup funciton definition by tag
-nnoremap gp <C-w>}
-nnoremap gz <C-w>z # close preview window
-
-" open curren file in new tab
+" open current file in new tab
 " :tab split
 
 " :sp f open file in new split
@@ -156,71 +183,25 @@ nnoremap gz <C-w>z # close preview window
 " return from a move
 nnoremap <Leader><BS> <C-o>
 
-" insert language boilerplate
-nnoremap <Leader>pdb  :read $HOME/.vim/snippets/pdb.py<ESC>==
-" nnoremap <Leader>pymain :read $HOME/.vim/snippets/pyboil.py<CR>
-" nnoremap <Leader>jcl :read $HOME/.vim/snippets/javaclass.java<CR>2f
-nnoremap <Leader>sh :read $HOME/.vim/snippets/shboil<CR>
-
-" by defualt, this woild hide all other splits.
-" Insteas we open the buffer in a new tab
-noremap   <C-w><C-o>  :tab sp<CR>
-
-"autocomplete for commands
-set wildmode=longest:full
-set wildmenu
-
-"  KINESIS MODE
-noremap ; l
-noremap l gk
-noremap k gj
-noremap j h
-" map <m-k> <c-w>j
-" map <m-l> <c-w>k
-" map <m-;> <c-w>l
-" map <m-j> <c-w>h
-noremap <c-w>j <c-w>h
-noremap <c-w>k <c-w>j
-noremap <c-w>l <c-w>k
-noremap <c-w>; <c-w>l
-"alternate window movement
-noremap <c-j> <c-w>h
-noremap <c-k> <c-w>j
-noremap <c-l> <c-w>k
-noremap <c-;> <c-w>l
-
-" since we are not using arrow keys, they can be window movement
-noremap <Left> <c-w>h
-noremap <Down> <c-w>j
-noremap <Up>  <c-w>k
-noremap <Right> <c-w>l
-
-"Cursor should move up/down a single row on the screen rather than to the next
-"line. useful for line lines taking up multiple rows
-" :nmap j gj
-" :nmap k gk
-
-:nnoremap <leader>j gT
-:nnoremap <leader>; gt
+" move between tabs
+nnoremap <leader>j gT
+nnoremap <leader>; gt
 
 "toggle relative and absolute number line
-nnoremap <F3> : set rnu!<CR>
+nnoremap <F3> :set rnu!<CR>
 
-" W sudo saves
+" w! sudo saves
 cmap w! w !sudo tee % >/dev/null
 
-"spelling
-set spelllang=en
+colorscheme edge
+" colorscheme sonokai
 
 set spell spelllang=en_us
 " instead of red blocks, underline misspelled words
 hi clear SpellBad
-" hi SpellBad cterm=underline
-set nospell
-
-
-" consider giving TabTab to something better
-" map <Tab><Tab> <C-W>w
+hi clear SpellLocal
+hi clear SpellCap
+hi SpellBad cterm=underline
 
 " set crosshairs
 hi CursorLine cterm=NONE ctermbg=DarkGray ctermfg=NONE
@@ -237,20 +218,8 @@ endfunction
 nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
 nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
-" prevent the command line history buffer from happening
-" map q: :q
-
-
-" we want to map C-Space to C-n
-" inoremap <C- > <C-n>
-
-" this hightlights the number trough when the corresponding line is HLed
-hi! link CursorLineNr CursorLine
-
-
 " provide some sort of alternative to ESC
 inoremap jj <ESC>
-
 
 " first time mark, then swap repeat
 function! DoWindowSwap()
@@ -279,19 +248,12 @@ nmap <silent> <leader>w :call DoWindowSwap()<CR>
 "search for selected text
 vnoremap // y/<C-R>"<CR>
 
-set clipboard=unnamed
-
-" open string as file
+" open string as split file
 nmap <Leader>o <C-w><C-f>
-
+" gf is the same but in the same buffer
 
 "Silver searcher
 let g:ackprg = 'ag --vimgrep'
-
-" opt into an undo file
-set undofile
-" set a directory to store the undo history
-set undodir=/Users/maxlebedev/.vimundo/
 
 " set noequalalways
 "TODO: we want to not do this when a file is created
@@ -321,16 +283,24 @@ nnoremap <leader>gg uU
 " Notification after file change
 
 " look, a cool thing
-" :new | set buftype=nofile | read !ag 
+" :new | set buftype=nofile | read !ag "SearchTerm" -G .py
 
-autocmd BufWritePost *.py !black %
+function Search(search_term)
+    :new | set buftype=nofile | read !ag a:search_term -G .py <CR>
+endfunction
+nnoremap <leader>s :call Search(expand("<cword>")) <CR>
 
 
-nnoremap gd <C-w>} " :pc to close preview window
+" autocmd BufWritePre *.py silent execute ':!black %'
+" autocmd BufWritePre *.py silent execute '! isort %' " sometimes isort conflicts with black
+" autocmd BufWritePre *.py execute 'call Black()'
+autocmd BufWritePre *.tf execute '!terraform fmt'
+
 
 " this (hopefully lets us leave term
 if has('nvim')
     tnoremap <ESC> <C-\><C-n>
+    set undodir=/Users/maxlebedev/.nvimundo/
 else
     "make Escape switch to Terminal-Normal mode:
     tnoremap <Esc> <C-w>N
@@ -343,3 +313,39 @@ else
     tnoremap  <C-h> <C-b>
     tnoremap  <C-l> <Right>
 endif
+
+
+" reload current vim
+" nnoremap <Leader>rr :mksession ~/.vim/tmp_sesh.vim
+" vim -S ~/mysession.vim
+
+" vertical is v, and wincmd is C-W
+" vertical wincmd
+
+" all scr files are temp
+autocmd BufNewFile scr :set buftype=nofile
+autocmd BufNewFile tmp :set buftype=nofile
+
+" Session save and restore
+" Automatically save the current session whenever vim is closed
+autocmd VimLeave * mksession! ~/.vim/shutdown_session.vim
+autocmd VimEnter source ~/.vim/shutdown_session.vim<CR>
+
+
+" TODO: implementing undo close split
+" the altbuf can be set right before/after a file close
+" this way, when reopening, we can look at the altbuf to see what to opten
+" in theory we can use some other register, too
+
+" let altbuf = bufnr(@#)
+" let @# = altbuf
+
+" TODO: implement a composable 'new-split' cmd
+" I want to be able to do :sp CocConfig
+" and get the config file open in a new tab
+
+" by default, have * hightlight the current word for searching, but not move
+nnoremap <silent> * :execute "normal! *N"<cr>
+
+" Reassign gu to search for current word usage
+nnoremap gu : execute "normal! *N"<bar> new <cword> <bar> set buftype=nofile <bar> set bufhidden=unload <bar> read !ag "%"
