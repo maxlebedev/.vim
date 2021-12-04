@@ -41,9 +41,6 @@ set wrapscan
 
 " opt into an undo file
 set undofile
-" set a directory to store the undo history
-" set undodir=/Users/maxlebedev/.vimundo/
-set undodir=/Users/maxlebedev/.nvimundo/
 
 set mousehide
 set scrolloff=8
@@ -82,7 +79,15 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'nvim-treesitter/nvim-treesitter'
+if has('nvim')
+	Plug 'nvim-treesitter/nvim-treesitter'
+	" Intellisense engine
+	Plug 'neoclide/coc.nvim', {'branch': 'release'}
+	nmap <silent> gd <Plug>(coc-definition)
+	nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
+	nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
+
+endif
 
 " git plugin, enables git blame
 Plug 'tpope/vim-fugitive'
@@ -115,12 +120,6 @@ nmap <leader>t :TagbarToggle<CR>
 " This controls the tagbar 'refresh' but also the swap file refresh frequency in ms.
 " default is 4000, and low values cause problems.
 set updatetime=500
-
-" Intellisense engine
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
-nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
 
 
 " Display marks sidebar because I'm a visual person
