@@ -8,16 +8,13 @@ scriptencoding utf-8
 set number
 set ruler
 syntax enable
-" set background=dark
 set noerrorbells
 set ttyfast
 set autoread
 
-" use the colorscheme background color, not the terminal one
-set t_ut=""
+set t_ut="" " use the colorscheme background color, not the terminal one
 
-" for find and such
-set path+=**
+set path+=** " for find and such
 
 let g:mapleader = ' '
 
@@ -39,7 +36,6 @@ set backspace=2 " Allow backspace as delete in insert mode
 set hidden
 set wrapscan
 
-" opt into an undo file
 set undofile
 
 set mousehide
@@ -63,6 +59,8 @@ hi! link CursorLineNr CursorLine
 "autocomplete for commands
 set wildmode=longest:full
 set wildmenu
+
+set listchars=tab:▸\ ,trail:·
 
 let g:python3_host_prog = '/Users/maxlebedev/.virtualenvs/screen/bin/python'
 
@@ -89,33 +87,47 @@ if has('nvim')
 
 endif
 
-" git plugin, enables git blame
+" color schemes
+" Plug 'joshdick/onedark.vim'
+" Plug 'sainnhe/sonokai'
+Plug 'sainnhe/edge'
+
+colorscheme edge
+
+
+Plug 'haya14busa/incsearch.vim'
+" Plug 'easymotion/vim-easymotion'
+Plug 'unblevable/quick-scope'
+
+augroup qs_colors
+  autocmd!
+	autocmd ColorScheme * highlight QuickScopePrimary gui=underline ctermfg=NONE cterm=underline
+	autocmd ColorScheme * highlight QuickScopeSecondary gui=underline ctermfg=NONE cterm=undercurl
+augroup END
+
+
+
 Plug 'tpope/vim-fugitive'
 nnoremap <leader>gb :Git blame<CR>
 
 " highlight other uses of the word under cursor
 Plug 'RRethy/vim-illuminate'
 
-" color schemes
-Plug 'joshdick/onedark.vim'
-Plug 'sainnhe/sonokai'
-Plug 'sainnhe/edge'
-
 " git diff in the vim gutter
 Plug 'airblade/vim-gitgutter'
-" remove the ugly grey background
-highlight clear SignColumn
+highlight clear SignColumn " remove the ugly grey background
 let g:gitgutter_set_sign_backgrounds = 1
 highlight GitGutterAdd    ctermfg=green
 highlight GitGutterChange ctermfg=yellow
 highlight GitGutterDelete ctermfg=red
 
-" tree visualiser for vim undo
 Plug 'mbbill/undotree'
 nmap <leader>u :UndotreeToggle<CR>
 
 " tag-based code overview panel
+" Plug 'preservim/tagbar'
 Plug 'majutsushi/tagbar'
+
 nmap <leader>t :TagbarToggle<CR>
 " This controls the tagbar 'refresh' but also the swap file refresh frequency in ms.
 " default is 4000, and low values cause problems.
@@ -130,15 +142,11 @@ Plug 'Yilin-Yang/vim-markbar' " open on `
 
 Plug 'sheerun/vim-polyglot'
 
-
-" This is in theory better because it uses LSP, but I didnt' like it
-"Plug 'liuchengxu/vista.vim'
-"nmap <leader>t :Vista!!<CR>
-
-
+" This is in theory better because it uses LSP, but I didn't like it
+" Plug 'liuchengxu/vista.vim'
+" nmap <leader>t :Vista!!<CR>
 
 Plug 'metakirby5/codi.vim'
-
 
 call plug#end()
 
@@ -167,12 +175,6 @@ noremap <S-Up>  <c-w>K
 noremap <S-Right> <c-w>L
 " END KINESIS MODE
 
-highlight Pmenu ctermbg=white guibg=white
-
-" lookup function definition by tag
-nnoremap gz <C-w>z " close preview window
-nnoremap gp <C-w>} " :pc to close preview window
-
 " open current file in new tab
 " :tab split
 
@@ -191,9 +193,6 @@ nnoremap <F3> :set rnu!<CR>
 
 " w! sudo saves
 cmap w! w !sudo tee % >/dev/null
-
-colorscheme edge
-" colorscheme sonokai
 
 set spell spelllang=en_us
 " instead of red blocks, underline misspelled words
@@ -251,10 +250,10 @@ vnoremap // y/<C-R>"<CR>
 nmap <Leader>o <C-w><C-f>
 " gf is the same but in the same buffer
 
-"Silver searcher
-let g:ackprg = 'ag --vimgrep'
+if executable('rg')
+	set grepprg=rg\ --vimgrep
+endif
 
-" set noequalalways
 "TODO: we want to not do this when a file is created
 "This does not work with multi-row lines, or for the first file
 function! AutoTrimLength()
@@ -265,6 +264,7 @@ function! AutoTrimLength()
 endfunction
 
 au BufRead,BufNewFile *.ts setlocal  filetype=typescript
+au VimResized * wincmd =
 
 " nnoremap Q :call autoTrimLength()<CR>
 " augroup bufsize
