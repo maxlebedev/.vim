@@ -60,7 +60,8 @@ hi! link CursorLineNr CursorLine
 set wildmode=longest:full
 set wildmenu
 
-set listchars=tab:▸\ ,trail:·
+set list
+set listchars=tab:▸\ ,trail:·,nbsp:␣
 
 let g:python3_host_prog = '/Users/maxlebedev/.virtualenvs/screen/bin/python'
 
@@ -85,14 +86,10 @@ if has('nvim')
 	nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
 	nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
 
+	" Plug 'lukas-reineke/indent-blankline.nvim'
+
 endif
 
-" color schemes
-" Plug 'joshdick/onedark.vim'
-" Plug 'sainnhe/sonokai'
-Plug 'sainnhe/edge'
-
-colorscheme edge
 
 
 Plug 'haya14busa/incsearch.vim'
@@ -102,10 +99,13 @@ Plug 'unblevable/quick-scope'
 augroup qs_colors
   autocmd!
 	autocmd ColorScheme * highlight QuickScopePrimary gui=underline ctermfg=NONE cterm=underline
-	autocmd ColorScheme * highlight QuickScopeSecondary gui=underline ctermfg=NONE cterm=undercurl
+	autocmd ColorScheme * highlight QuickScopeSecondary gui=undercurl ctermfg=NONE cterm=undercurl
 augroup END
 
-
+" color schemes
+" Plug 'joshdick/onedark.vim'
+" Plug 'sainnhe/sonokai'
+Plug 'sainnhe/edge'
 
 Plug 'tpope/vim-fugitive'
 nnoremap <leader>gb :Git blame<CR>
@@ -152,6 +152,7 @@ call plug#end()
 
 filetype indent plugin on " read all filetype specific plugins. None by default automatic indentation
 
+colorscheme edge
 " ==================
 " 3: CUSTOM SETTINGS
 " ==================
@@ -272,6 +273,7 @@ au VimResized * wincmd =
 " augroup END
 
 " replace the current word with the last yanked text
+" TODO: lines shouldn't keep \n, and don't overwrite the yank buffer
 nnoremap <leader>rr viw"0p
 
 " dumb hack to go back to what I was doing
