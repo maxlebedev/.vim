@@ -78,20 +78,6 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-if has('nvim')
-	Plug 'nvim-treesitter/nvim-treesitter'
-	" Intellisense engine
-	Plug 'neoclide/coc.nvim', {'branch': 'release'}
-	nmap <silent> gd <Plug>(coc-definition)
-	nmap <silent> <leader>] <Plug>(coc-diagnostic-next)
-	nmap <silent> <leader>[ <Plug>(coc-diagnostic-prev)
-
-	" Plug 'lukas-reineke/indent-blankline.nvim'
-
-endif
-
-
-
 Plug 'haya14busa/incsearch.vim'
 " Plug 'easymotion/vim-easymotion'
 Plug 'unblevable/quick-scope'
@@ -109,6 +95,9 @@ Plug 'sainnhe/edge'
 
 Plug 'tpope/vim-fugitive'
 nnoremap <leader>gb :Git blame<CR>
+
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-abolish'
 
 " highlight other uses of the word under cursor
 Plug 'RRethy/vim-illuminate'
@@ -283,13 +272,7 @@ nnoremap <leader>gg uU
 " autocmd FocusGained,BufEnter * if mode() != 'c' | checktime | endif
 " Notification after file change
 
-" look, a cool thing
-" :new | set buftype=nofile | read !ag "SearchTerm" -G .py
 
-function Search(search_term)
-    :new | set buftype=nofile | read !ag a:search_term -G .py <CR>
-endfunction
-nnoremap <leader>s :call Search(expand("<cword>")) <CR>
 
 
 " autocmd BufWritePre *.py silent execute ':!black %'
@@ -350,3 +333,6 @@ nnoremap <silent> * :execute "normal! *N"<cr>
 
 " Reassign gu to search for current word usage
 nnoremap gu : execute "normal! *N"<bar> new <cword> <bar> set buftype=nofile <bar> set bufhidden=unload <bar> read !ag "%"
+
+
+xnoremap p "_dp
