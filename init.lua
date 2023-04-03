@@ -589,6 +589,10 @@ vim.keymap.set('n', '<leader>gd', '<c-w>]', {desc="[G]oto [D]efinition"})
 --[[
 TODO: things that bother me most:
 * ex mode path completion
+https://github.com/Vigemus/iron.nvim
+https://github.com/nvim-neotest/neotest
+https://github.com/ajeetdsouza/zoxide
+https://github.com/ogham/exa
 ]]--
 
 -- The line beneath this is called `modeline`. See `:help modeline`
