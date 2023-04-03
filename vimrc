@@ -1,3 +1,4 @@
+" THIS FILE IS OUTDATED, UNUSED
 " ====================
 " 1: UNIVERSAL CONFIGS
 " ====================
@@ -334,5 +335,5 @@ nnoremap <silent> * :execute "normal! *N"<cr>
 " Reassign gu to search for current word usage
 nnoremap gu : execute "normal! *N"<bar> new <cword> <bar> set buftype=nofile <bar> set bufhidden=unload <bar> read !ag "%"
 
-
+" don't yank when pasting in visual/select mode. Lets me paste multiple times
 xnoremap p "_dp
